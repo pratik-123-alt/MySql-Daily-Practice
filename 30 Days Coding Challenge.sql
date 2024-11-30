@@ -86,7 +86,8 @@ VALUES	(222, 'Samsung Galaxy S21', '504', 1699),
 -- Q1.
 -- Write an SQL query to find the name of the product with the highest price in each country.
 -- use Rank function to display all of the highest price products and Join to combine both the tables
-        
+
+Solution:-
 select * from products;
 select * from suppliers;
 
@@ -103,7 +104,10 @@ from cte
 where rnk = 1
 order by price desc;
 
+------------------------------------------------------------------------------
 -- Q.2 
+-- find total transaction amt group by each customer filter with current year 
+-- put where condition to check if the transaction are current year, 2024
 -- Create Customer table
 CREATE TABLE Customers (
     Customer_id INT PRIMARY KEY,
@@ -140,8 +144,8 @@ VALUES
     (403, 2, '2023-02-22', 100.00),
     (304, 3, '2022-03-15', 200.00),
     (505, 2, '2024-03-20', 120.75);
--- find total transaction amt group by each customer filter with current year 
--- put where condition to check if the transaction are current year, 2024
+
+SOLUTION:-
 SELECT * FROM customers;
 SELECT *FROM transaction;
 SELECT 
