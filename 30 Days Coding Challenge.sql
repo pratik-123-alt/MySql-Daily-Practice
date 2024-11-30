@@ -1,9 +1,9 @@
--- Amazon Interview Practice 21/02/2024
-
-
-/* 1. You have two tables: Product and Supplier.
+/* You have two tables: Product and Supplier.
 - Product Table Columns: Product_id, Product_Name, Supplier_id, Price
 - Supplier Table Columns: Supplier_id, Supplier_Name, Country
+-- Q1.
+-- Write an SQL query to find the name of the product with the highest price in each country.
+-- use Rank function to display all of the highest price products and Join to combine both the tables
 */
 -- creating the product table 
 
@@ -83,9 +83,6 @@ VALUES	(222, 'Samsung Galaxy S21', '504', 1699),
 		(249, 'ZTE Blade 20', '502', 1599),
 		(250, 'Oppo Find X3 Pro', '503', 1999);
         
--- Q1.
--- Write an SQL query to find the name of the product with the highest price in each country.
--- use Rank function to display all of the highest price products and Join to combine both the tables
 
 Solution:-
 select * from products;
@@ -105,8 +102,12 @@ where rnk = 1
 order by price desc;
 
 ------------------------------------------------------------------------------
--- Q.2 
--- find total transaction amt group by each customer filter with current year 
+You have two tables: Customer and Transaction.
+- Customer Table Columns: Customer_id, Customer_Name, Registration_Date
+- Transaction Table Columns: Transaction_id, Customer_id, Transaction_Date, Amount
+The output should contain Customer_Name and the total amount.
+	
+-- Q.2 Write a SQL query to find total transaction amt group by each customer filter with current year 
 -- put where condition to check if the transaction are current year, 2024
 -- Create Customer table
 CREATE TABLE Customers (
