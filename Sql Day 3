@@ -23,7 +23,7 @@ INSERT INTO Salaries (emp_name,
 Write an SQL query to calculate the difference between the highest salaries in the marketing and engineering department. 
 Output the absolute difference in salaries. 
 
-
+SOLUTION:-
 SELECT 
     ABS((SELECT 
                     MAX(salary)
@@ -36,3 +36,9 @@ SELECT
                     salaries
                 WHERE
                     department = 'Engineering')) AS salary_difference;
+
+OUTPUT:-
+------------------
+salary_difference
+------------------
+49000
