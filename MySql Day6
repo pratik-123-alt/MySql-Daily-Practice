@@ -1,0 +1,129 @@
+Code with SQL Day 6
+
+-- Create the employees table
+CREATE TABLE employees (
+    employee_id SERIAL PRIMARY KEY,
+    name VARCHAR(100),
+    department VARCHAR(50),
+    salary DECIMAL(10, 2)
+);
+
+-- Insert records for three departments
+INSERT INTO employees (name, department, salary) VALUES 
+('John Doe', 'Engineering', 63000),
+('Jane Smith', 'Engineering', 55000),
+('Michael Johnson', 'Engineering', 64000),
+('Emily Davis', 'Marketing', 58000),
+('Chris Brown', 'Marketing', 56000),
+('Emma Wilson', 'Marketing', 59000),
+('Alex Lee', 'Sales', 58000),
+('Sarah Adams', 'Sales', 58000),
+('Ryan Clark', 'Sales', 61000);
+
+/*
+Q1. Write the SQL query to find the second highest salary
+Q2. Question: Get the details of the employee with the second-highest salary from each department
+*/
+
+-- Solution 1
+with s_rnk as (SELECT 
+    name, department, salary,
+    dense_rank() over(order by salary desc) as salary_rnk
+FROM
+    employees)
+    SELECT 
+    name, department salary
+FROM
+    s_rnk
+WHERE
+    salary_rnk = 2;
+    
+-- Solution 2
+with s_rnk as (SELECT 
+    name, department, salary,
+    dense_rank() over(partition by(department) order by salary desc) as salary_rnk
+FROM
+    employees)
+    SELECT 
+    name, department salary
+FROM
+    s_rnk
+WHERE
+    salary_rnk = 2;
+
+-- Order Return Problem Statement
+
+DROP TABLE IF EXISTS Orders;	
+CREATE TABLE Orders (
+    OrderID INT PRIMARY KEY,
+    OrderDate DATE,
+    TotalAmount DECIMAL(10, 2)
+);
+DROP TABLE IF EXISTS Returns;
+CREATE TABLE Returns (
+    ReturnID INT PRIMARY KEY,
+    OrderID INT,
+    FOREIGN KEY (OrderID) REFERENCES Orders(OrderID)
+);
+
+INSERT INTO Orders (OrderID, OrderDate, TotalAmount) VALUES
+(21, '2024-05-10', 980.00),
+(1, '2023-01-15', 150.50),
+(2, '2023-02-20', 200.75),
+(3, '2023-02-28', 300.25),
+(4, '2023-03-10', 180.00),
+(5, '2023-04-05', 250.80),
+(6, '2023-02-15', 150.50),
+(7, '2023-04-20', 500.75),
+(8, '2023-02-28', 200.25),
+(9, '2023-05-10', 180.00),
+(10, '2023-04-05', 850.80),
+(11, '2023-01-15', 250.50),
+(12, '2023-02-20', 600.75),
+(13, '2023-03-28', 200.25),
+(14, '2023-03-10', 280.00),
+(15, '2023-02-05', 270.80),
+(16, '2023-02-15', 160.50),
+(17, '2023-06-20', 220.75),
+(18, '2023-08-28', 380.25),
+(19, '2023-05-10', 980.00),
+(21, '2024-05-10', 980.00),
+(20, '2023-04-05', 2500.80);
+
+INSERT INTO Returns (ReturnID, OrderID) VALUES
+(116, 21),
+(101, 1),
+(102, 2),
+(103, 3),
+(104, 4),
+(106, 6),
+(107, 5),
+(105, 8),
+(108, 9),
+(109, 10),
+(110, 12),
+(111, 13),
+(122, 14),
+(113, 15),
+(114, 11),
+(115, 7);
+
+/*
+Given the Orders table with columns OrderID, OrderDate, and TotalAmount, and the Returns table with columns ReturnID and OrderID.
+
+write an SQL query to calculate the total numbers of returned orders for each month
+*/
+
+Solution:-
+
+SELECT 
+    YEAR(o.OrderDate) AS 'Year',
+    DATE_FORMAT(o.OrderDate, '%M') AS 'Month',
+    -- DATE_FORMAT(o.OrderDate, '%M %Y') AS 'Month',
+    count(r.ReturnID) as returned_order
+FROM
+    orders AS o
+        JOIN
+    returns AS r ON r.orderID = o.orderID
+GROUP BY DATE_FORMAT(OrderDate, '%M %Y')
+ORDER BY COUNT(ReturnID) DESC;
