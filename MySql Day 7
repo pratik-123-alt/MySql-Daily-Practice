@@ -1,0 +1,92 @@
+#Problem Statement 1:
+
+CREATE TABLE Transactions1 (
+    TransactionID INT AUTO_INCREMENT PRIMARY KEY, -- Unique ID for each transaction
+    CustomerID INT NOT NULL,                      -- ID of the customer
+    Date DATE NOT NULL,                           -- Date of the transaction
+    Amount DECIMAL(10, 2) NOT NULL                -- Amount of the transaction
+);
+
+INSERT INTO Transactions_linkedIn (CustomerID, Date, Amount)
+VALUES (101, '2023-01-15', 100.00),
+(101, '2023-01-20', 150.00),
+(102, '2023-02-10', 200.00),
+(101, '2023-02-15', 120.00),
+(102, '2023-03-05', 300.00),
+(101, '2024-11-15', 100.00),
+(101, '2024-11-20', 150.00),
+(102, '2024-11-10', 200.00),
+(101, '2024-11-15', 120.00),
+(102, '2024-11-05', 300.00);
+/*1. You have a table Transactions with columns TransactionID, CustomerID, Date, and Amount. 
+Write a query to calculate the 
+1. monthly revenue per customer
+2. cumulative revenue per customer for each month. */
+
+with cte as (SELECT 
+    *,
+    sum(Amount) as MonthlyRevenue,
+    date_format(Date, '%m %Y') as month_date
+FROM
+    transactions_linkedin
+group by date_format(Date, '%m %Y'), CustomerID
+order by CustomerID)
+select CustomerID, month_date, MonthlyRevenue,
+sum(MonthlyRevenue) over( partition by CustomerID order by month_date) as CumulativeRevenue
+from cte;
+
+
+/* *************************************** */
+
+Problem Statement 2:
+
+CREATE TABLE employee (
+    EmpID INT PRIMARY KEY,
+    ManagerID INT,
+    JoinDate DATE,
+    Dept VARCHAR(50),
+    Salary INT
+);
+
+INSERT INTO employee (EmpID, ManagerID, JoinDate, Dept, Salary)
+VALUES 
+(10, 3, '2024-12-01', 'Finance', 11000),
+(11, 3, '2024-10-01', 'IT', 13000),
+(12, 4, '2024-12-03', 'IT', 14000),
+(13, 5, '2024-09-01', 'HR', 7500),
+(1, NULL, '2023-12-01', 'HR', 8000),
+(2, 1, '2023-12-02', 'IT', 12000),
+(3, 1, '2023-11-20', 'IT', 15000),
+(4, 2, '2023-11-15', 'Finance', 10000),
+(5, 2, '2023-12-04', 'HR', 9000),
+(6, 3, '2023-12-01', 'Finance', 11000),
+(7, 3, '2023-10-01', 'IT', 13000),
+(8, 4, '2023-12-03', 'IT', 14000),
+(9, 5, '2023-09-01', 'HR', 7500);
+
+/* Q1: Find the 2nd highest salary from the Employee table. 
+Q2: You have an employee table with employee ID and manager ID. Find all employees under a specific manager, including their subordinates at any level.
+Q3: Write a query to find the cumulative salary of employees department-wise, who have joined company in last 30 days. */
+-- Solution 1
+with cte as (SELECT 
+    *,
+	dense_rank() over (order by salary desc) as salary_rnk
+FROM
+    employee)
+    SELECT 
+    EmpID, Salary
+FROM
+    cte
+WHERE
+    salary_rnk = 2;
+-- Solution
+-- Q3: Write a query to find the cumulative salary of employees department-wise, who have joined company in last 30 days. */
+SELECT 
+    EmpID, JoinDate, Dept, Salary,
+    sum(Salary) Over(partition by Dept order by EmpID) as cumu_sal
+FROM
+    employee
+where JoinDate >= current_date() - interval 90 day;
+    
+
+
