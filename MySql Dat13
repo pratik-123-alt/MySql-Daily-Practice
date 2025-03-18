@@ -1,0 +1,35 @@
+create table team (
+	team1 varchar(10),
+    team2 varchar(10),
+    winner varchar(10)
+);
+insert into team(team1, team2, winner) values
+    ('India', 'Pakistan', 'India'),
+    ('Australia', 'Pakistan', 'Australia'),
+    ('Australia', 'India', 'India'),
+    ('Pakistan', 'England','England');
+    
+select * from team;
+    
+-- Problem Statement Find the total games played by each team and respective win and loss.
+-- Solution :
+	-- Check Team1 and Winner value and insert 1 and 0 for Win and Loss
+    -- Same for Team2
+    -- Union ALL both the results
+    -- Use Count Agg. function, SUM, Diff to get results
+
+with table_chart as (
+	select team1 as team,
+		case when team1 = winner then 1 else 0 end as point
+	from team
+    UNION ALL
+    select team2 as team,
+		case when team2 = winner then 1 else 0 end as point
+	from team
+)
+select team, 
+	count(*) as `Match Played`, sum(point) as 'Win',
+    count(*) - sum(point) as 'Loss'
+from table_chart
+group by team
+order by Win desc;
