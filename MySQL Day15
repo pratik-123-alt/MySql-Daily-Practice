@@ -1,0 +1,41 @@
+-- Problen Statement:
+-- Find the Median Salary for Each Department
+create table employee (
+	emp_id int,
+    salary int,
+    dpt varchar(10)
+);
+truncate table employee;
+insert into employee(emp_id, salary, dpt) values 
+	(1, 2000, 'HR'),
+    (2, 4500, 'HR'),
+    (3, 3500, 'HR'),
+    (4, 3000, 'IT'),
+    (5, 4000, 'IT'),
+    (6, 6000, 'IT'),
+    (7, 5000, 'IT');
+   
+select * from employee;
+    
+-- SOLUTION
+with cte as (
+	select *,
+	row_number() over(partition by dpt order by salary asc) as row_no,
+	count(*) over(partition by dpt) as total_count
+	from employee
+)
+select dpt,
+	case when total_count % 2 = 0
+    then (
+		select avg(salary) from cte c1
+        where c1.dpt = c2.dpt and
+        row_no in ((total_count/2),(total_count/2)+1)
+    )
+    else  (
+		select salary from cte c1
+        where c1.dpt = c2.dpt and
+        c1.row_no = ((c2.total_count+1)/2)
+    )
+    end as median_salary
+from cte as c2
+group by dpt, total_count
