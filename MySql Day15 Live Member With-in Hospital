@@ -1,0 +1,32 @@
+-- Problem Statement 2
+-- Number of live Stuff present with in Hospital, present in hospital.
+
+create table hospital ( emp_id int
+, action varchar(10)
+, time datetime);
+
+insert into hospital values ('1', 'in', '2019-12-22 09:00:00');
+insert into hospital values ('1', 'out', '2019-12-22 09:15:00');
+insert into hospital values ('2', 'in', '2019-12-22 09:00:00');
+insert into hospital values ('2', 'out', '2019-12-22 09:15:00');
+insert into hospital values ('2', 'in', '2019-12-22 09:30:00');
+insert into hospital values ('3', 'out', '2019-12-22 09:00:00');
+insert into hospital values ('3', 'in', '2019-12-22 09:15:00');
+insert into hospital values ('3', 'out', '2019-12-22 09:30:00');
+insert into hospital values ('3', 'in', '2019-12-22 09:45:00');
+insert into hospital values ('4', 'in', '2019-12-22 09:45:00');
+insert into hospital values ('5', 'out', '2019-12-22 09:40:00');
+
+--SOLUTION :-
+select * from hospital;
+
+with cte as (
+	select emp_id,
+	max(case when action = 'in' then time end) as in_time,
+	max(case when action = 'out' then time end) as out_time
+	from hospital
+	group by emp_id
+)
+select emp_id as'Employee Inside Hospital'
+from cte
+where in_time > out_time or out_time is null;
