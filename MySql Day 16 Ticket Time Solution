@@ -1,0 +1,50 @@
+-- Questoin 1 : 
+-- Need to find out how proficient we are in solving critical tickets. How many business days are needed to solve a ticket?
+-- (Need to Check for weekend, Holidays)
+
+-- create database PracticeSQL;
+Use PracticeSQL;
+create table tickets
+(
+ticket_id varchar(10),
+create_date date,
+resolved_date date
+);
+--delete from tickets;
+insert into tickets values
+(1,'2022-08-01','2022-08-03')
+,(2,'2022-08-01','2022-08-12')
+,(3,'2022-08-01','2022-08-16');
+create table holidays
+(
+holiday_date date
+,reason varchar(100)
+);
+--delete from holidays;
+insert into holidays values
+('2022-08-11','Rakhi'),('2022-08-15','Independence day'),('2022-08-14','Public day');
+
+-- SOLUTION:-
+with cte as (
+select ticket_id, create_date, resolved_date,count(holiday_date) as holidays
+from tickets
+left join holidays 
+on holiday_date between create_date and resolved_date
+and DATEPART(weekday, holiday_date) between 2 and 6
+group by ticket_id, create_date, resolved_date
+)
+select ticket_id,
+datediff(day, create_date, resolved_date)-2*DATEDIFF(week, create_date, resolved_date)-holidays as issue_resolve_time
+from cte;
+
+-- Extra Code:-
+select *,
+datediff(day, create_date, resolved_date) as date_diff,
+DATEDIFF(week, create_date, resolved_date) as week_diff
+from tickets
+left join holidays 
+on holiday_date between create_date and resolved_date;
+
+select *
+from holidays
+where DATEPART(weekday, holiday_date) between 2 and 6;
