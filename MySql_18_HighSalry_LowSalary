@@ -1,0 +1,44 @@
+🎯 SQL Case Study: Budget-Based Candidate Shortlisting
+🔍 Problem Statement:
+ You are given a list of candidates with their salary expectations and types (senior or junior).
+ You have a fixed budget of $70,000 and want to:
+Hire as many senior candidates as possible within the budget.
+Allocate the remaining budget to hire junior candidates.
+
+CREATE TABLE candidates (
+ candidate_id INT PRIMARY KEY,
+ candidate_type VARCHAR(10) CHECK (candidate_type IN ('senior', 'junior')),
+ salary_demand DECIMAL(10,2) NOT NULL
+);
+INSERT INTO candidates (candidate_id, candidate_type, salary_demand) VALUES
+ -- Senior candidates (ordered by salary for clarity)
+ (1, 'senior', 45000.00),  (2, 'senior', 50000.00),  (3, 'senior', 35000.00),
+ (4, 'senior', 40000.00),  (5, 'senior', 55000.00),
+ 
+ -- Junior candidates (ordered by salary for clarity)
+ (6, 'junior', 15000.00),  (7, 'junior', 20000.00),  (8, 'junior', 18000.00),
+ (9, 'junior', 12000.00),  (10, 'junior', 25000.00);
+
+-- Solution:
+with cte as (
+	select *
+	, sum(salary_demand) over (partition by candidate_type order by salary_demand asc) as running_salary
+	from candidates
+	)
+,senior_hired as (
+	select *
+	from cte
+	where running_salary <= 70000 and candidate_type = 'senior'
+)
+,used_budget as (
+	select coalesce(max(running_salary),0) as used_budget from senior_hired
+)
+,junior_hired as(
+	select * 
+	from cte
+	where running_salary <= 70000-(select used_budget from used_budget)
+	and candidate_type = 'junior'
+)
+select * from senior_hired
+union all
+select * from junior_hired;
