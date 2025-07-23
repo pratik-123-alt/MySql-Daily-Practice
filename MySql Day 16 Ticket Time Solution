@@ -30,7 +30,7 @@ select ticket_id, create_date, resolved_date,count(holiday_date) as holidays
 from tickets
 left join holidays 
 on holiday_date between create_date and resolved_date
-and DATEPART(weekday, holiday_date) between 2 and 6
+and DATEPART(weekday, holiday_date) between 2 and 6 -- this line of code will remove those holiday dates which are in weekends
 group by ticket_id, create_date, resolved_date
 )
 select ticket_id,
